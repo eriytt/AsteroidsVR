@@ -7,7 +7,7 @@ GVRNDK = $(GVRSDK)/ndk
 export ANDROID_SDK ANDROID_NDK GVRSDK GVRNDK
 
 ADB = $(ANDROID_SDK)/platform-tools/adb
-APK = project/bin/OgreClient-debug.apk
+APK = project/bin/AsteroidsVR-debug.apk
 
 all:
 	$(MAKE) -C cxx
@@ -20,7 +20,7 @@ install: $(APK)
 	$(ADB) install -r $(APK)
 
 run:
-	$(ADB) shell am start -n com.towersmatrix.ogre/.OgreActivity
+	$(ADB) shell am start -n com.towersmatrix.ogre/.AsteroidsVRActivity
 
 clean:
 	$(MAKE) -C project clean

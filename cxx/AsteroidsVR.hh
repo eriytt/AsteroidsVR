@@ -4,7 +4,7 @@
 #  include "ogre-linux.hh"
 #endif
 
-class OgreCardboardTestApp:  public OgreCardboardApp,  public Ogre::RenderQueueListener
+class AsteroidsVRApp:  public OgreCardboardApp,  public Ogre::RenderQueueListener
 {
 private:
   const char *VertexShader =
@@ -54,19 +54,18 @@ private:
   Ogre::SceneNode *mNode = nullptr;
   Ogre::SceneNode *camNode = nullptr;
   Ogre::SceneNode *nfNode = nullptr;
-  class Terrain *terrain = nullptr;
   bool forward = false, backward = false, left = false, right = false;
-  
+
 protected:
   void setupCamera();
   void setupResources(Ogre::ResourceGroupManager &rgm);
 
 public:
 #if defined(ANDROID)
-  OgreCardboardTestApp(JNIEnv *env, jobject androidSurface, gvr_context *gvr, AAssetManager* amgr)
+  AsteroidsVRApp(JNIEnv *env, jobject androidSurface, gvr_context *gvr, AAssetManager* amgr)
     : OgreCardboardApp(env, androidSurface, gvr, amgr) {}
 #else
-    OgreCardboardTestApp() : OgreCardboardApp() {}
+    AsteroidsVRApp() : OgreCardboardApp() {}
 #endif
   void initialize();
   void mainLoop();

@@ -18,7 +18,7 @@ CC = $(ANDROID_TOOLCHAIN_ROOT)/bin/$(ANDROID_TOOLCHAIN_NAME)-gcc
 CXX = $(ANDROID_TOOLCHAIN_ROOT)/bin/$(ANDROID_TOOLCHAIN_NAME)-g++
 LD = $(ANDROID_TOOLCHAIN_ROOT)/bin/$(ANDROID_TOOLCHAIN_NAME)-ld
 
-OBJECTS = jni.o testapp.o ogre.o Terrain.o
+OBJECTS = jni.o AsteroidsVR.o ogre.o
 DEBUG_CXXFLAGS = #-g
 OPT_CXXFLAGS = -O2
 SYSTEM_CXXFLAGS = --sysroot=${ANDROID_SYSROOT} \
@@ -44,10 +44,10 @@ OGRE_LDFLAGS = -L$(OGRE_BUILD_PATH)/lib -lRenderSystem_GLES2Static -lOgreTerrain
 
 TEST_LDFLAGS = -lGLESv2
 LDFLAGS = -shared -fPIC $(OGRE_LDFLAGS) $(GVR_LDFLAGS) $(SYSTEM_LDFLAGS) \
--Wl,-uJava_com_towersmatrix_ogre_OgreActivity_nativeInitOgre
+-Wl,-uJava_com_towersmatrix_ogre_AsteroidsVRActivity_nativeInitOgre
 
-ogreclient.so: $(OBJECTS)
+asteroidsvr.so: $(OBJECTS)
 	$(CXX) -o $@ $(OBJECTS) $(LDFLAGS)
 
 clean:
-	rm -f $(OBJECTS) ogreclient.so
+	rm -f $(OBJECTS) asteroidsvr.so

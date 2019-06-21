@@ -1,13 +1,13 @@
 #include <unistd.h>
 #include <ois/OIS.h>
 
-#include "testapp.hh"
+#include "AsteroidsVR.hh"
 
 class EventHandler : public OIS::KeyListener
 {
 public:
-  OgreCardboardTestApp *app;
-  EventHandler(OgreCardboardTestApp *app) : app(app) {}
+  AsteroidsVRApp *app;
+  EventHandler(AsteroidsVRApp *app) : app(app) {}
   bool keyPressed( const OIS::KeyEvent &arg ) {
     if (arg.key == OIS::KC_W)
       app->handleKeyDown(3);
@@ -35,7 +35,7 @@ public:
 
 int main(int argc, char *argv[])
 {
-  OgreCardboardTestApp *app = new OgreCardboardTestApp();
+  AsteroidsVRApp *app = new AsteroidsVRApp();
   app->initialize();
 
 

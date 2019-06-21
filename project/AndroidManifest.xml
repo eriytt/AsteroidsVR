@@ -15,7 +15,7 @@
   <uses-feature android:name="android.hardware.vr.high_performance" android:required="false"/>
   
   <application android:label="@string/app_name" android:icon="@drawable/ic_launcher">
-    <activity android:name="OgreActivity"
+    <activity android:name="AsteroidsVRActivity"
               android:label="@string/app_name"
               android:screenOrientation="landscape">
       <intent-filter>

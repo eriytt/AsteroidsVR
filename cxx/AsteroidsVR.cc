@@ -1,6 +1,4 @@
-#include "testapp.hh"
-
-#include "Terrain.hh"
+#include "AsteroidsVR.hh"
 
 static Ogre::ManualObject* createCubeMesh(Ogre::String name, Ogre::String matName, Ogre::Real size = 0.5)
 {
@@ -58,7 +56,7 @@ static void CreateGrid(Ogre::Real distance, int size,
 }
 
 
-void OgreCardboardTestApp::setupCamera()
+void AsteroidsVRApp::setupCamera()
 {
   forBothCameras([](Ogre::Camera *cam){
       cam->setNearClipDistance(10.0f);
@@ -67,23 +65,19 @@ void OgreCardboardTestApp::setupCamera()
 }
 
 #if defined(ANDROID)
-void OgreCardboardTestApp::setupResources(Ogre::ResourceGroupManager &rgm)
+void AsteroidsVRApp::setupResources(Ogre::ResourceGroupManager &rgm)
 {
-  rgm.createResourceGroup("Terrain/Default", false);
-  rgm.addResourceLocation("/terrain", "APKFileSystem", "Terrain/Default");
   rgm.addResourceLocation("/models", "APKFileSystem");
 }
 #else
-void OgreCardboardTestApp::setupResources(Ogre::ResourceGroupManager &rgm)
+void AsteroidsVRApp::setupResources(Ogre::ResourceGroupManager &rgm)
 {
-  rgm.createResourceGroup("Terrain/Default", false);
-  rgm.addResourceLocation("../project/assets/terrain", "FileSystem", "Terrain/Default");
   rgm.addResourceLocation("../project/assets/models", "FileSystem");
 }
 
 #endif
 
-void OgreCardboardTestApp::initialize()
+void AsteroidsVRApp::initialize()
 {
   OgreCardboardApp::initialize();
 
@@ -133,8 +127,6 @@ void OgreCardboardTestApp::initialize()
 
   CreateGrid(30.0, 3, sceneManager, cube_mesh);
 
-  terrain = new ::Terrain(root, "Terrain/Default" /*DefaultTerrainResourceGroup*/);
-
   camNode = sceneManager->getRootSceneNode()->createChildSceneNode();
   camNode->setPosition(lcam->getDerivedPosition());
 
@@ -152,7 +144,7 @@ void OgreCardboardTestApp::initialize()
   sceneManager->addRenderQueueListener(this);
 }
 
-void OgreCardboardTestApp::mainLoop()
+void AsteroidsVRApp::mainLoop()
 {
   if (forward)
     {
@@ -185,7 +177,7 @@ void OgreCardboardTestApp::mainLoop()
   renderFrame();
 }
 
-void OgreCardboardTestApp::handleKeyDown(int key)
+void AsteroidsVRApp::handleKeyDown(int key)
 {
   switch(key)
     {
@@ -206,7 +198,7 @@ void OgreCardboardTestApp::handleKeyDown(int key)
     }
 }
 
-void OgreCardboardTestApp::handleKeyUp(int key)
+void AsteroidsVRApp::handleKeyUp(int key)
 {
   switch(key)
     {
@@ -227,7 +219,7 @@ void OgreCardboardTestApp::handleKeyUp(int key)
     }
 }
 
-void OgreCardboardTestApp::renderQueueStarted(Ogre::uint8 queueGroupId, const Ogre::String &invocation, bool &skipThisInvocation)
+void AsteroidsVRApp::renderQueueStarted(Ogre::uint8 queueGroupId, const Ogre::String &invocation, bool &skipThisInvocation)
 {
   if (queueGroupId == 51)
     {
@@ -246,7 +238,7 @@ void OgreCardboardTestApp::renderQueueStarted(Ogre::uint8 queueGroupId, const Og
     }
 }
 
-void OgreCardboardTestApp::renderQueueEnded(Ogre::uint8 queueGroupId, const Ogre::String &invocation, bool &repeatThisInvocation)
+void AsteroidsVRApp::renderQueueEnded(Ogre::uint8 queueGroupId, const Ogre::String &invocation, bool &repeatThisInvocation)
 {
   if (queueGroupId == 51)
     {

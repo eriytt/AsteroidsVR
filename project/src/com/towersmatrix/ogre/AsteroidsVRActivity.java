@@ -15,9 +15,9 @@ import com.google.vr.ndk.base.GvrLayout;
 import com.google.vr.ndk.base.GvrUiLayout;
 
 
-public class OgreActivity extends Activity {
+public class AsteroidsVRActivity extends Activity {
     static {
-        System.loadLibrary("ogreclient");
+        System.loadLibrary("asteroidsvr");
     }
     
     private GvrLayout gvrLayout;
