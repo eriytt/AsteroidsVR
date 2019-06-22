@@ -60,7 +60,6 @@ private:
 
   Asteroid *asteroid = nullptr;
   Ogre::SceneNode *camNode = nullptr;
-  Ogre::SceneNode *nfNode = nullptr;
   bool forward = false, backward = false, left = false, right = false;
 
 protected:

@@ -2,62 +2,6 @@
 
 #include "AsteroidField.hh"
 
-static Ogre::ManualObject* createCubeMesh(Ogre::String name, Ogre::String matName, Ogre::Real size = 0.5)
-{
-  auto cube = OGRE_NEW Ogre::ManualObject(name);
-  cube->begin(matName);
-
-  cube->position(size,-size,size);cube->normal(0.408248,-0.816497,0.408248);cube->textureCoord(1,0);
-  cube->position(-size,-size, -size);cube->normal(-0.408248,-0.816497,-0.408248);cube->textureCoord(0,1);
-  cube->position(size,-size, -size);cube->normal(0.666667,-0.333333,-0.666667);cube->textureCoord(1,1);
-  cube->position(-size,-size,size);cube->normal(-0.666667,-0.333333,0.666667);cube->textureCoord(0,0);
-  cube->position(size,size,size);cube->normal(0.666667,0.333333,0.666667);cube->textureCoord(1,0);
-  cube->position(-size,-size,size);cube->normal(-0.666667,-0.333333,0.666667);cube->textureCoord(0,1);
-  cube->position(size,-size,size);cube->normal(0.408248,-0.816497,0.408248);cube->textureCoord(1,1);
-  cube->position(-size,size,size);cube->normal(-0.408248,0.816497,0.408248);cube->textureCoord(0,0);
-  cube->position(-size,size, -size);cube->normal(-0.666667,0.333333,-0.666667);cube->textureCoord(0,1);
-  cube->position(-size,-size, -size);cube->normal(-0.408248,-0.816497,-0.408248);cube->textureCoord(1,1);
-  cube->position(-size,-size,size);cube->normal(-0.666667,-0.333333,0.666667);cube->textureCoord(1,0);
-  cube->position(size,-size, -size);cube->normal(0.666667,-0.333333,-0.666667);cube->textureCoord(0,1);
-  cube->position(size,size, -size);cube->normal(0.408248,0.816497,-0.408248);cube->textureCoord(1,1);
-  cube->position(size,-size,size);cube->normal(0.408248,-0.816497,0.408248);cube->textureCoord(0,0);
-  cube->position(size,-size, -size);cube->normal(0.666667,-0.333333,-0.666667);cube->textureCoord(1,0);
-  cube->position(-size,-size, -size);cube->normal(-0.408248,-0.816497,-0.408248);cube->textureCoord(0,0);
-  cube->position(-size,size,size);cube->normal(-0.408248,0.816497,0.408248);cube->textureCoord(1,0);
-  cube->position(size,size, -size);cube->normal(0.408248,0.816497,-0.408248);cube->textureCoord(0,1);
-  cube->position(-size,size, -size);cube->normal(-0.666667,0.333333,-0.666667);cube->textureCoord(1,1);
-  cube->position(size,size,size);cube->normal(0.666667,0.333333,0.666667);cube->textureCoord(0,0);
-
-  cube->triangle(0,2,1);      cube->triangle(3,0,1);
-  cube->triangle(4,6,5);      cube->triangle(4,5,7);
-  cube->triangle(8,10,9);      cube->triangle(10,8,7);
-  cube->triangle(4,12,11);   cube->triangle(4,11,13);
-  cube->triangle(14,12,8);   cube->triangle(14,8,15);
-  cube->triangle(16,18,17);   cube->triangle(16,17,19);
-  cube->end();
-
-  return cube;
-}
-
-
-static void CreateGrid(Ogre::Real distance, int size,
-                       Ogre::SceneManager *mgr,
-                       const Ogre::MeshPtr mesh)
-{
-  for (int x = 0; x < size; ++x)
-    for (int y = 0; y < size; ++y)
-      for (int z = 0; z < size; ++z)
-        {
-          std::stringstream name;
-          name << "GridCube" << x << "," << y << "," << z;
-          Ogre::Entity *ent = mgr->createEntity(name.str(), mesh);
-          Ogre::SceneNode *gnode = mgr->getRootSceneNode()
-            ->createChildSceneNode(Ogre::Vector3(x * distance * 10, y * distance, z * distance * 10));
-          gnode->attachObject(ent);
-        }
-}
-
-
 void AsteroidsVRApp::setupCamera()
 {
   forBothCameras([&](Ogre::Camera *cam){
@@ -117,29 +61,14 @@ void AsteroidsVRApp::initialize()
     Ogre::SharedPtr<Ogre::DataStream>(scriptStream, Ogre::SPFM_DELETE);
   Ogre::MaterialManager::getSingleton().parseScript(ptr, "General");
 
-  Ogre::ManualObject *cube = createCubeMesh("Cube", "myshadermaterial");
-  Ogre::MeshPtr cube_mesh = cube->convertToMesh("CubeMesh");
 
   AsteroidField::initialize(sceneManager, SpaceSize);
   Ogre::Entity* asteroid_ent = sceneManager->createEntity("asteroid.mesh");
   asteroid_ent->setMaterialName("myshadermaterial");
   asteroid = new Asteroid(asteroid_ent, Ogre::Vector3(-5000.0f, 0.0f, 0.0f));
 
-  CreateGrid(30.0, 3, sceneManager, cube_mesh);
-
   camNode = sceneManager->getRootSceneNode()->createChildSceneNode();
   camNode->setPosition(lcam->getDerivedPosition());
-
-
-  Ogre::ManualObject *small_cube = createCubeMesh("Cube", "myshadermaterial", 0.03);
-  Ogre::MeshPtr small_cube_mesh = small_cube->convertToMesh("SmallCubeMesh");
-  small_cube_mesh->_setBounds(Ogre::AxisAlignedBox(Ogre::Vector3(-10, -10, -10),
-                                                   Ogre::Vector3(10, 10, 10)));
-  Ogre::Entity *nf_ent = sceneManager->createEntity("NearFieldCube", small_cube_mesh);
-  nf_ent->setMaterialName("myshadermaterial");
-  nfNode = camNode->createChildSceneNode(Ogre::Vector3(0, 0, 0.5));
-  nfNode->attachObject(nf_ent);
-  nf_ent->setRenderQueueGroup(51);
 
   sceneManager->addRenderQueueListener(this);
 }
@@ -165,8 +94,6 @@ void AsteroidsVRApp::mainLoop()
   auto n = lcam->getDerivedPosition();
   camNode->setPosition(n);
   camNode->yaw(Ogre::Radian(0.1));
-  nfNode->yaw(Ogre::Radian(0.5));
-  nfNode->pitch(Ogre::Radian(0.05));
 
   asteroid->update(1.0);
 
