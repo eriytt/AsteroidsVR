@@ -1,5 +1,7 @@
 #include "AsteroidsVR.hh"
 
+#include "AsteroidField.hh"
+
 static Ogre::ManualObject* createCubeMesh(Ogre::String name, Ogre::String matName, Ogre::Real size = 0.5)
 {
   auto cube = OGRE_NEW Ogre::ManualObject(name);
@@ -118,12 +120,13 @@ void AsteroidsVRApp::initialize()
   Ogre::ManualObject *cube = createCubeMesh("Cube", "myshadermaterial");
   Ogre::MeshPtr cube_mesh = cube->convertToMesh("CubeMesh");
 
-  Ogre::Entity* column_ent = sceneManager->createEntity("column.mesh");
-  column_ent->setMaterialName("myshadermaterial");
-  mNode = sceneManager->getRootSceneNode()->createChildSceneNode();
-  mNode->attachObject(column_ent);
-  mNode->setPosition(0.0f, 0.0f, 0.0f);
-  mNode->setScale(0.02f, 0.02f, 0.02f);
+  AsteroidField::initialize(sceneManager);
+  Ogre::Entity* asteroid_ent = sceneManager->createEntity("asteroid.mesh");
+  asteroid_ent->setMaterialName("myshadermaterial");
+  asteroid = new Asteroid(asteroid_ent, Ogre::Vector3(-500.0f, 0.0f, 0.0f));
+  // mNode = sceneManager->getRootSceneNode()->createChildSceneNode();
+  // mNode->attachObject(asteroid_ent);
+  // mNode->setPosition(-500.0f, 0.0f, 0.0f);
 
   CreateGrid(30.0, 3, sceneManager, cube_mesh);
 
@@ -136,7 +139,7 @@ void AsteroidsVRApp::initialize()
   small_cube_mesh->_setBounds(Ogre::AxisAlignedBox(Ogre::Vector3(-10, -10, -10),
                                                    Ogre::Vector3(10, 10, 10)));
   Ogre::Entity *nf_ent = sceneManager->createEntity("NearFieldCube", small_cube_mesh);
-  column_ent->setMaterialName("myshadermaterial");
+  nf_ent->setMaterialName("myshadermaterial");
   nfNode = camNode->createChildSceneNode(Ogre::Vector3(0, 0, 0.5));
   nfNode->attachObject(nf_ent);
   nf_ent->setRenderQueueGroup(51);
@@ -168,11 +171,7 @@ void AsteroidsVRApp::mainLoop()
   nfNode->yaw(Ogre::Radian(0.5));
   nfNode->pitch(Ogre::Radian(0.05));
 
-  mNode->translate(Ogre::Vector3(0.1, 0.1, 0.1));
-  mNode->yaw(Ogre::Radian(0.05));
-  mNode->pitch(Ogre::Radian(0.05));
-  if (mNode->getPosition().z > 100.0)
-    mNode->setPosition(0.0f, 0.0f, 0.0f);
+  asteroid->update(1.0);
 
   renderFrame();
 }

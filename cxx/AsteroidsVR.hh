@@ -4,6 +4,8 @@
 #  include "ogre-linux.hh"
 #endif
 
+#include "Asteroid.hh"
+
 class AsteroidsVRApp:  public OgreCardboardApp,  public Ogre::RenderQueueListener
 {
 private:
@@ -51,7 +53,7 @@ private:
     "    }\n"
     "}\n";
 
-  Ogre::SceneNode *mNode = nullptr;
+  Asteroid *asteroid = nullptr;
   Ogre::SceneNode *camNode = nullptr;
   Ogre::SceneNode *nfNode = nullptr;
   bool forward = false, backward = false, left = false, right = false;
