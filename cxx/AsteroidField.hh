@@ -9,7 +9,7 @@ private:
   static AsteroidField *field;
 
 public:
-  static void initialize(Ogre::SceneManager *scene_mgr);
+  static void initialize(Ogre::SceneManager *scene_mgr, float size);
   static const AsteroidField &getSingleton();
 
 public:

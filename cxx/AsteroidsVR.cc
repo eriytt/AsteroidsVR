@@ -60,9 +60,9 @@ static void CreateGrid(Ogre::Real distance, int size,
 
 void AsteroidsVRApp::setupCamera()
 {
-  forBothCameras([](Ogre::Camera *cam){
-      cam->setNearClipDistance(10.0f);
-      cam->setFarClipDistance(1000.0f);
+  forBothCameras([&](Ogre::Camera *cam){
+      cam->setNearClipDistance(NearClip);
+      cam->setFarClipDistance(FarClip);
     });
 }
 
@@ -85,7 +85,7 @@ void AsteroidsVRApp::initialize()
 
   forBothCamerasAndViewports([](Ogre::Camera *c, Ogre::Viewport *vp){
     c->setPosition(Ogre::Vector3(80.0f, 80.0f, 80.0f));
-    c->lookAt(Ogre::Vector3(0.0f, 80.0f, 0.0f));
+    c->lookAt(Ogre::Vector3(-5000.0f, 0.0f, 0.0f));
     vp->setBackgroundColour(Ogre::ColourValue::Black);
     });
 
@@ -120,13 +120,10 @@ void AsteroidsVRApp::initialize()
   Ogre::ManualObject *cube = createCubeMesh("Cube", "myshadermaterial");
   Ogre::MeshPtr cube_mesh = cube->convertToMesh("CubeMesh");
 
-  AsteroidField::initialize(sceneManager);
+  AsteroidField::initialize(sceneManager, SpaceSize);
   Ogre::Entity* asteroid_ent = sceneManager->createEntity("asteroid.mesh");
   asteroid_ent->setMaterialName("myshadermaterial");
-  asteroid = new Asteroid(asteroid_ent, Ogre::Vector3(-500.0f, 0.0f, 0.0f));
-  // mNode = sceneManager->getRootSceneNode()->createChildSceneNode();
-  // mNode->attachObject(asteroid_ent);
-  // mNode->setPosition(-500.0f, 0.0f, 0.0f);
+  asteroid = new Asteroid(asteroid_ent, Ogre::Vector3(-5000.0f, 0.0f, 0.0f));
 
   CreateGrid(30.0, 3, sceneManager, cube_mesh);
 
@@ -243,8 +240,8 @@ void AsteroidsVRApp::renderQueueEnded(Ogre::uint8 queueGroupId, const Ogre::Stri
     {
       auto rs = root->getRenderSystem();
       auto cam = rs->_getViewport()->getCamera();
-      cam->setNearClipDistance(10.0f);
-      cam->setFarClipDistance(1000.0f);
+      cam->setNearClipDistance(NearClip);
+      cam->setFarClipDistance(FarClip);
 #if defined(ANDROID)
       gvr::Rectf fp = OgreCardboardApp::GVRFOV2FrustumExtents(cam == lcam ? lFOV : rFOV, cam->getNearClipDistance());
       cam->setFrustumExtents(fp.left, fp.right, fp.top, fp.bottom);

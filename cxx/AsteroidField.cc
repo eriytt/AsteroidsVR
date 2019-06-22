@@ -2,10 +2,10 @@
 
 AsteroidField *AsteroidField::field;
 
-void AsteroidField::initialize(Ogre::SceneManager *mgr)
+void AsteroidField::initialize(Ogre::SceneManager *mgr, float size)
 {
   field = new AsteroidField();
-  field->size = Ogre::Vector3(1000, 1000, 1000);
+  field->size = Ogre::Vector3(size, size, size);
   field->sceneManager = mgr;
 }
 

@@ -8,6 +8,11 @@
 
 class AsteroidsVRApp:  public OgreCardboardApp,  public Ogre::RenderQueueListener
 {
+public:
+  const float SpaceSize = 100000.0;
+  const float FarClip = 100000.0;
+  const float NearClip = 100.0;
+
 private:
   const char *VertexShader =
     "precision mediump float;\n"

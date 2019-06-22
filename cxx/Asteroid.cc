@@ -11,7 +11,7 @@ Asteroid::Asteroid(Ogre::Entity *ent, const Ogre::Vector3 &pos)
 
 void Asteroid::update(Ogre::Real time_step)
 {
-  node->translate(Ogre::Vector3(10.1, 1.1, 10.1) * time_step);
+  node->translate(Ogre::Vector3(10.1, 1.1, 1.1) * time_step);
   node->yaw(Ogre::Radian(0.05) * time_step);
   node->pitch(Ogre::Radian(0.05) * time_step);
   node->setPosition(AsteroidField::getSingleton().moduloSpace(node->getPosition()));
