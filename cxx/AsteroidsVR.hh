@@ -58,6 +58,9 @@ private:
     "    }\n"
     "}\n";
 
+  Ogre::Timer * timer = nullptr;
+  unsigned long lastFrameTime_us;
+
   Asteroid *asteroid = nullptr;
   Ogre::SceneNode *camNode = nullptr;
   bool forward = false, backward = false, left = false, right = false;

@@ -71,31 +71,39 @@ void AsteroidsVRApp::initialize()
   camNode->setPosition(lcam->getDerivedPosition());
 
   sceneManager->addRenderQueueListener(this);
+
+  timer = new Ogre::Timer();
+  timer->reset();
+  lastFrameTime_us = timer->getMicroseconds();
 }
 
 void AsteroidsVRApp::mainLoop()
 {
+  unsigned long frame_time = timer->getMicroseconds();
+  Ogre::Real tdelta = (frame_time - lastFrameTime_us) / Ogre::Real(1000000);
+  lastFrameTime_us = frame_time;
+
   if (forward)
     {
       Ogre::Vector3 d(lcam->getDerivedDirection());
-      forBothCameras([&d](Ogre::Camera *cam){cam->move(d *  0.5);});
+      forBothCameras([&](Ogre::Camera *cam){cam->move(d * 5.0 * tdelta);});
     }
   else if (backward)
     {
       Ogre::Vector3 d(lcam->getDerivedDirection());
-      forBothCameras([&d](Ogre::Camera *cam){cam->move(d * -0.5);});
+      forBothCameras([&](Ogre::Camera *cam){cam->move(d * -5.0 * tdelta);});
     }
 
   if (left)
-    forBothCameras([](Ogre::Camera *cam){cam->yaw(Ogre::Radian( 0.05));});
+    forBothCameras([&](Ogre::Camera *cam){cam->yaw(Ogre::Radian( 0.5 * tdelta));});
   else if (right)
-    forBothCameras([](Ogre::Camera *cam){cam->yaw(Ogre::Radian(-0.05));});
+    forBothCameras([&](Ogre::Camera *cam){cam->yaw(Ogre::Radian(-0.5 * tdelta));});
 
   auto n = lcam->getDerivedPosition();
-  camNode->setPosition(n);
-  camNode->yaw(Ogre::Radian(0.1));
+  // camNode->setPosition(n);
+  // camNode->yaw(Ogre::Radian(0.1));
 
-  asteroid->update(1.0);
+  asteroid->update(tdelta);
 
   renderFrame();
 }
