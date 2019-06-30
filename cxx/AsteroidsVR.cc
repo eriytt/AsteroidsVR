@@ -95,15 +95,28 @@ void AsteroidsVRApp::mainLoop()
   Ogre::Real tdelta = (frame_time - lastFrameTime_us) / Ogre::Real(1000000);
   lastFrameTime_us = frame_time;
 
-  if (forward)
-      shipNode->translate(Ogre::Vector3(0, 0, -500) * tdelta, Ogre::Node::TransformSpace::TS_LOCAL);
-  else if (backward)
-      shipNode->translate(Ogre::Vector3(0, 0, 500) * tdelta, Ogre::Node::TransformSpace::TS_LOCAL);
+  float F = 10000000.0;
+  Ogre::Vector3 direction(shipNode->_getDerivedOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z);
+  Ogre::Vector3 acceleration(direction * (forward ? F : 0.0) / shipMass);
+  shipVelocity += acceleration / 2.0 * tdelta;
 
   if (left)
     shipNode->yaw(Ogre::Radian( 0.5 * tdelta));
   else if (right)
     shipNode->yaw(Ogre::Radian(-0.5 * tdelta));
+
+  if (up)
+    shipNode->pitch(Ogre::Radian( 0.5 * tdelta));
+  else if (down)
+    shipNode->pitch(Ogre::Radian(-0.5 * tdelta));
+
+  if (roll_left)
+    shipNode->roll(Ogre::Radian( 0.5 * tdelta));
+  else if (roll_right)
+    shipNode->roll(Ogre::Radian(-0.5 * tdelta));
+
+
+  shipNode->translate(shipVelocity * tdelta);
 
   asteroid->update(tdelta);
   for (auto shot : shots)
@@ -114,22 +127,37 @@ void AsteroidsVRApp::mainLoop()
 
 bool AsteroidsVRApp::handleKeyDown(int key)
 {
+  std::cout << "Key: " << (key == AKEYCODE_W) << std::endl;
   switch(key)
     {
-    case AKEYCODE_A:
-      left = true;
-      break;
-    case AKEYCODE_D:
-      right = true;
-      break;
     case AKEYCODE_W:
       forward = true;
       break;
     case AKEYCODE_S:
       backward = true;
       break;
+    case AKEYCODE_A:
+      roll_left = true;
+      break;
+    case AKEYCODE_D:
+      roll_right = true;
+      break;
+    case AKEYCODE_J:
+      left = true;
+      break;
+    case AKEYCODE_L:
+      right = true;
+      break;
+    case AKEYCODE_I:
+      up = true;
+      break;
+    case AKEYCODE_K:
+      down = true;
+      break;
+
     case AKEYCODE_F:
       {
+        std::cout << "Velocity: " << shipVelocity.length() << " m/s" << std::endl;
         Ogre::SceneNode *shot = sceneManager->getRootSceneNode()->createChildSceneNode();
         std::stringstream name("shot");
         name << shots.size();
@@ -152,17 +180,29 @@ bool AsteroidsVRApp::handleKeyUp(int key)
 {
   switch(key)
     {
-    case AKEYCODE_A:
-      left = false;
-      break;
-    case AKEYCODE_D:
-      right = false;
-      break;
     case AKEYCODE_W:
       forward = false;
       break;
     case AKEYCODE_S:
       backward = false;
+      break;
+    case AKEYCODE_A:
+      roll_left = false;
+      break;
+    case AKEYCODE_D:
+      roll_right = false;
+      break;
+    case AKEYCODE_J:
+      left = false;
+      break;
+    case AKEYCODE_L:
+      right = false;
+      break;
+    case AKEYCODE_I:
+      up = false;
+      break;
+    case AKEYCODE_K:
+      down = false;
       break;
     default:
       return false;

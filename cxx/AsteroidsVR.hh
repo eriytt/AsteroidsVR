@@ -61,10 +61,12 @@ private:
   Ogre::Timer * timer = nullptr;
   unsigned long lastFrameTime_us;
 
+  float shipMass = 75000;
+  Ogre::Vector3 shipVelocity = Ogre::Vector3::ZERO;
   Ogre::SceneNode *shipNode = nullptr;
   Asteroid *asteroid = nullptr;
   std::vector<Ogre::SceneNode *> shots;
-  bool forward = false, backward = false, left = false, right = false;
+  bool forward = false, backward = false, left = false, right = false, up = false, down = false, roll_right = false, roll_left = false;
 
 protected:
   void setupCamera();

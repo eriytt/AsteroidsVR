@@ -4,47 +4,54 @@
 #include "AsteroidsVR.hh"
 #include "keycodes.h"
 
+#define O2A_LETTER(x) case OIS::KC_##x: return AKEYCODE_##x
+
+static inline int OIS2AndroidKey(int key)
+{
+  switch (key)
+    {
+      O2A_LETTER(A);
+      O2A_LETTER(B);
+      O2A_LETTER(C);
+      O2A_LETTER(D);
+      O2A_LETTER(E);
+      O2A_LETTER(F);
+      O2A_LETTER(G);
+      O2A_LETTER(H);
+      O2A_LETTER(I);
+      O2A_LETTER(J);
+      O2A_LETTER(K);
+      O2A_LETTER(L);
+      O2A_LETTER(M);
+      O2A_LETTER(N);
+      O2A_LETTER(O);
+      O2A_LETTER(P);
+      O2A_LETTER(Q);
+      O2A_LETTER(R);
+      O2A_LETTER(S);
+      O2A_LETTER(T);
+      O2A_LETTER(U);
+      O2A_LETTER(V);
+      O2A_LETTER(W);
+      O2A_LETTER(X);
+      O2A_LETTER(Y);
+      O2A_LETTER(Z);
+      O2A_LETTER(SPACE);
+      default: return 0;
+    }
+
+}
+
 class EventHandler : public OIS::KeyListener
 {
 public:
   AsteroidsVRApp *app;
   EventHandler(AsteroidsVRApp *app) : app(app) {}
   bool keyPressed( const OIS::KeyEvent &arg ) {
-    switch (arg.key)
-      {
-      case OIS::KC_W:
-        app->handleKeyDown(AKEYCODE_W); break;
-      case OIS::KC_S:
-        app->handleKeyDown(AKEYCODE_S); break;
-      case OIS::KC_A:
-        app->handleKeyDown(AKEYCODE_A); break;
-      case OIS::KC_D:
-        app->handleKeyDown(AKEYCODE_D); break;
-      case OIS::KC_F:
-        app->handleKeyDown(AKEYCODE_F); break;
-      case OIS::KC_SPACE:
-        app->handleKeyDown(AKEYCODE_SPACE); break;
-      default: break;
-      }
-
-    return true;
+    return app->handleKeyDown(OIS2AndroidKey(arg.key));
   }
   bool keyReleased( const OIS::KeyEvent &arg ) {
-    switch (arg.key)
-      {
-      case OIS::KC_W:
-        app->handleKeyUp(AKEYCODE_W); break;
-      case OIS::KC_S:
-        app->handleKeyUp(AKEYCODE_S); break;
-      case OIS::KC_A:
-        app->handleKeyUp(AKEYCODE_A); break;
-      case OIS::KC_D:
-        app->handleKeyUp(AKEYCODE_D); break;
-      case OIS::KC_SPACE:
-        app->handleKeyUp(AKEYCODE_SPACE); break;
-      default: break;
-      }
-    return true;
+    return app->handleKeyUp(OIS2AndroidKey(arg.key));
   }
 };
 
