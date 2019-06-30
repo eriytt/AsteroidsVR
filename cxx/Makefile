@@ -26,7 +26,7 @@ SYSTEM_CXXFLAGS = --sysroot=${ANDROID_SYSROOT} \
 -isystem $(ANDROID_NDK)/sources/android/cpufeatures \
 -isystem $(ANDROID_NDK)/sources/cxx-stl/gnu-libstdc++/$(ANDROID_TOOLCHAIN_VERSION)/include \
 -isystem $(ANDROID_NDK)/sources/cxx-stl/gnu-libstdc++/$(ANDROID_TOOLCHAIN_VERSION)/libs/$(ANDROID_ABI)/include
-OGRE_CXXFLAGS = -I$(OGRE_PATH)/OgreMain/include -I$(OGRE_PATH)/RenderSystems/GLES2/include -I$(OGRE_PATH)/Components/Terrain/include -I$(OGRE_BUILD_PATH)/include
+OGRE_CXXFLAGS = -I$(OGRE_PATH)/OgreMain/include -I$(OGRE_PATH)/RenderSystems/GLES2/include -I$(OGRE_PATH)/PlugIns/ParticleFX/include -I$(OGRE_PATH)/Components/Terrain/include -I$(OGRE_BUILD_PATH)/include
 GVR_CXXFLAGS = -I$(GVRNDK)/include
 
 CXXFLAGS = $(DEBUG_CXXFLAGS) $(OPT_CXXFLAGS) -std=c++14 -Wall -fPIC -frtti -fexceptions $(SYSTEM_CXXFLAGS) $(OGRE_CXXFLAGS) $(GVR_CXXFLAGS) -DANDROID
@@ -40,7 +40,7 @@ OGREDEPS_LDFLAGS = -L$(OGREDEPS)/lib/$(ANDROID_ABI) -lFreeImage -lzzip
 OGRE_LDFLAGS = -L$(OGRE_BUILD_PATH)/lib -lRenderSystem_GLES2Static -lOgreGLSupportStatic -lOgreMainStatic -L$(OGRE_BUILD_PATH)/OgreJNI/obj/local/$(ANDROID_ABI) -lcpufeatures -lGLESv2
 
 OGREDEPS_LDFLAGS = -L$(OGREDEPS)/lib/$(ANDROID_ABI) -lFreeImage -lzzip -lzlib
-OGRE_LDFLAGS = -L$(OGRE_BUILD_PATH)/lib -lRenderSystem_GLES2Static -lOgreTerrainStatic -lOgreMainStatic -L$(OGRE_BUILD_PATH)/OgreJNI/obj/local/$(ANDROID_ABI) -lcpufeatures -lGLESv2 $(OGREDEPS_LDFLAGS)
+OGRE_LDFLAGS = -L$(OGRE_BUILD_PATH)/lib -lPlugin_ParticleFXStatic -lRenderSystem_GLES2Static -lOgreTerrainStatic -lOgreMainStatic -L$(OGRE_BUILD_PATH)/OgreJNI/obj/local/$(ANDROID_ABI) -lcpufeatures -lGLESv2 $(OGREDEPS_LDFLAGS)
 
 TEST_LDFLAGS = -lGLESv2
 LDFLAGS = -shared -fPIC $(OGRE_LDFLAGS) $(GVR_LDFLAGS) $(SYSTEM_LDFLAGS) \

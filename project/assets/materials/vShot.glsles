@@ -1,0 +1,19 @@
+#version 100
+
+precision mediump float;
+
+attribute vec4 vertex;
+attribute vec4 colour;
+attribute vec4 uv0;
+
+uniform mat4 uWorldViewProj;
+
+varying vec2 texcoord;
+varying vec4 color;
+
+void main()
+{
+    texcoord = uv0.st;
+    color = colour;
+    gl_Position = uWorldViewProj * vertex;
+}

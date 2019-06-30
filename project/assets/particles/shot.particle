@@ -1,0 +1,38 @@
+particle_system Shot
+{
+    material Shot
+    particle_width 2
+    particle_height 2
+    cull_each false
+    quota 10000
+    iteration_interval 0.01
+    billboard_type point
+
+    // Area emitter
+    emitter Point
+    {
+        angle 0
+        emission_rate 150
+        time_to_live 0.2
+        direction 0 0 1
+        velocity_min 10
+        velocity_max 80
+        colour 1 1 1
+    }
+
+    // Gravity
+    // affector LinearForce
+    // {
+    //    force_vector 0 -100 0
+    //    force_application add
+    // }
+
+    // Fader
+    affector ColourFader
+    {
+        red -5.0
+        green -5.0
+        blue -1.0
+        alpha -5.0
+    }
+}

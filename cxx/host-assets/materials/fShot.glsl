@@ -1,0 +1,11 @@
+varying vec2 texcoord;
+varying vec4 color;
+
+void main()
+{
+    float x = texcoord.s - 0.5;
+    float y = texcoord.t - 0.5;
+    float center_distance = sqrt((x * x) + (y * y));
+    float fade = 1.0 - center_distance * 2.0;
+    gl_FragColor = vec4(color.r * fade, color.g * fade, color.b * fade, color.a * fade);
+}

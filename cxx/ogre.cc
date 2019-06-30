@@ -12,6 +12,7 @@
 
 
 #include <OgreGLES2Plugin.h>
+#include <OgreParticleFXPlugin.h>
 #include <Android/OgreAPKFileSystemArchive.h>
 #include <Android/OgreAPKZipArchive.h>
 
@@ -85,22 +86,25 @@ void OgreCardboardApp::initialize()
     Ogre::RenderSystem *rs = root->getAvailableRenderers().at(0);
     root->setRenderSystem(rs);
     rs->setFixedPipelineEnabled(false); // TODO: is this needed or does it help in any way?
+    auto particleFXPlugin = OGRE_NEW Ogre::ParticleFXPlugin();
+    root->installPlugin(particleFXPlugin);
 
     root->initialise(false);
 
     Ogre::ArchiveManager::getSingleton().addArchiveFactory(new Ogre::APKFileSystemArchiveFactory(amgr));
     Ogre::ArchiveManager::getSingleton().addArchiveFactory(new Ogre::APKZipArchiveFactory(amgr));
 
-    Ogre::ResourceGroupManager &rgm = Ogre::ResourceGroupManager::getSingleton();
-    // Call concrete implementation
-    setupResources(rgm);
-    rgm.initialiseAllResourceGroups();
 
     ANativeWindow* nativeWnd = ANativeWindow_fromSurface(env, androidSurface);
     Ogre::NameValuePairList opt;
     opt["externalWindowHandle"] = Ogre::StringConverter::toString((int)nativeWnd);
     opt["currentGLContext"]     = Ogre::StringConverter::toString(true);
     renderWindow = root->createRenderWindow("OgreWindow", render_size.width, render_size.height, false, &opt);
+
+    Ogre::ResourceGroupManager &rgm = Ogre::ResourceGroupManager::getSingleton();
+    // Call concrete implementation
+    setupResources(rgm);
+    rgm.initialiseAllResourceGroups();
 
     sceneManager = root->createSceneManager(Ogre::ST_GENERIC, "SceneManager");
 

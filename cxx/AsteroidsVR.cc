@@ -1,5 +1,6 @@
 #include "AsteroidsVR.hh"
 
+#include "keycodes.h"
 #include "AsteroidField.hh"
 
 void AsteroidsVRApp::setupCamera()
@@ -14,11 +15,16 @@ void AsteroidsVRApp::setupCamera()
 void AsteroidsVRApp::setupResources(Ogre::ResourceGroupManager &rgm)
 {
   rgm.addResourceLocation("/models", "APKFileSystem");
+  rgm.addResourceLocation("/particles", "APKFileSystem");
+  rgm.addResourceLocation("/materials", "APKFileSystem");
 }
 #else
 void AsteroidsVRApp::setupResources(Ogre::ResourceGroupManager &rgm)
 {
   rgm.addResourceLocation("../project/assets/models", "FileSystem");
+  rgm.addResourceLocation("../project/assets/particles", "FileSystem");
+  rgm.addResourceLocation("host-assets/materials", "FileSystem");
+  rgm.addResourceLocation("../project/assets/materials", "FileSystem");
 }
 
 #endif
@@ -28,7 +34,7 @@ void AsteroidsVRApp::initialize()
   OgreCardboardApp::initialize();
 
   forBothCamerasAndViewports([](Ogre::Camera *c, Ogre::Viewport *vp){
-    c->setPosition(Ogre::Vector3(80.0f, 80.0f, 80.0f));
+    c->setPosition(Ogre::Vector3(0.0f, 0.0f, 0.0f));
     c->lookAt(Ogre::Vector3(-5000.0f, 0.0f, 0.0f));
     vp->setBackgroundColour(Ogre::ColourValue::Black);
     });
@@ -67,8 +73,14 @@ void AsteroidsVRApp::initialize()
   asteroid_ent->setMaterialName("myshadermaterial");
   asteroid = new Asteroid(asteroid_ent, Ogre::Vector3(-5000.0f, 0.0f, 0.0f));
 
-  camNode = sceneManager->getRootSceneNode()->createChildSceneNode();
-  camNode->setPosition(lcam->getDerivedPosition());
+  shipNode = sceneManager->getRootSceneNode()->createChildSceneNode();
+  shipNode->setPosition(lcam->getDerivedPosition());
+  shipNode->setOrientation(lcam->getDerivedOrientation());
+  forBothCameras([&](Ogre::Camera *c){
+      shipNode->attachObject(c);
+      c->setPosition(Ogre::Vector3(0.0f, 0.0f, 0.0f));
+      c->lookAt(Ogre::Vector3(-1.0f, 0.0f, 0.0f));
+    });
 
   sceneManager->addRenderQueueListener(this);
 
@@ -84,70 +96,79 @@ void AsteroidsVRApp::mainLoop()
   lastFrameTime_us = frame_time;
 
   if (forward)
-    {
-      Ogre::Vector3 d(lcam->getDerivedDirection());
-      forBothCameras([&](Ogre::Camera *cam){cam->move(d * 5.0 * tdelta);});
-    }
+      shipNode->translate(Ogre::Vector3(0, 0, -500) * tdelta, Ogre::Node::TransformSpace::TS_LOCAL);
   else if (backward)
-    {
-      Ogre::Vector3 d(lcam->getDerivedDirection());
-      forBothCameras([&](Ogre::Camera *cam){cam->move(d * -5.0 * tdelta);});
-    }
+      shipNode->translate(Ogre::Vector3(0, 0, 500) * tdelta, Ogre::Node::TransformSpace::TS_LOCAL);
 
   if (left)
-    forBothCameras([&](Ogre::Camera *cam){cam->yaw(Ogre::Radian( 0.5 * tdelta));});
+    shipNode->yaw(Ogre::Radian( 0.5 * tdelta));
   else if (right)
-    forBothCameras([&](Ogre::Camera *cam){cam->yaw(Ogre::Radian(-0.5 * tdelta));});
-
-  auto n = lcam->getDerivedPosition();
-  // camNode->setPosition(n);
-  // camNode->yaw(Ogre::Radian(0.1));
+    shipNode->yaw(Ogre::Radian(-0.5 * tdelta));
 
   asteroid->update(tdelta);
+  for (auto shot : shots)
+    shot->translate(Ogre::Vector3(0, 0, -1000) * tdelta, Ogre::Node::TransformSpace::TS_LOCAL);
 
   renderFrame();
 }
 
-void AsteroidsVRApp::handleKeyDown(int key)
+bool AsteroidsVRApp::handleKeyDown(int key)
 {
   switch(key)
     {
-    case 1:
+    case AKEYCODE_A:
       left = true;
       break;
-    case 2:
+    case AKEYCODE_D:
       right = true;
       break;
-    case 3:
+    case AKEYCODE_W:
       forward = true;
       break;
-    case 4:
+    case AKEYCODE_S:
       backward = true;
       break;
+    case AKEYCODE_F:
+      {
+        Ogre::SceneNode *shot = sceneManager->getRootSceneNode()->createChildSceneNode();
+        std::stringstream name("shot");
+        name << shots.size();
+        Ogre::ParticleSystem *sps = sceneManager->createParticleSystem(name.str(), "Shot");
+        shot->attachObject(sps);
+        shot->setPosition(shipNode->getPosition());
+        shot->setOrientation(shipNode->getOrientation());
+        shot->translate(Ogre::Vector3(0, 5, (shots.size() & 1 ? -1.0 : 1.0) * 10));
+        shots.push_back(shot);
+      }
+      break;
     default:
+      return false;
       break;
     }
+  return true;
 }
 
-void AsteroidsVRApp::handleKeyUp(int key)
+bool AsteroidsVRApp::handleKeyUp(int key)
 {
   switch(key)
     {
-    case 1:
+    case AKEYCODE_A:
       left = false;
       break;
-    case 2:
+    case AKEYCODE_D:
       right = false;
       break;
-    case 3:
+    case AKEYCODE_W:
       forward = false;
       break;
-    case 4:
+    case AKEYCODE_S:
       backward = false;
       break;
     default:
+      return false;
       break;
     }
+  return true;
 }
 
 void AsteroidsVRApp::renderQueueStarted(Ogre::uint8 queueGroupId, const Ogre::String &invocation, bool &skipThisInvocation)

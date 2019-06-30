@@ -1,0 +1,20 @@
+material Shot
+{
+    // first, preferred technique
+    technique
+    {
+        // first pass
+        pass
+        {
+            scene_blend alpha_blend
+            depth_write off
+            vertex_program_ref vShot
+            {
+                param_named_auto uWorldViewProj WORLDVIEWPROJ_MATRIX
+            }
+            fragment_program_ref fShot
+            {
+            }
+        }
+    }
+}

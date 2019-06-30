@@ -2,6 +2,7 @@
 #include <ois/OIS.h>
 
 #include "AsteroidsVR.hh"
+#include "keycodes.h"
 
 class EventHandler : public OIS::KeyListener
 {
@@ -9,26 +10,40 @@ public:
   AsteroidsVRApp *app;
   EventHandler(AsteroidsVRApp *app) : app(app) {}
   bool keyPressed( const OIS::KeyEvent &arg ) {
-    if (arg.key == OIS::KC_W)
-      app->handleKeyDown(3);
-    if (arg.key == OIS::KC_S)
-      app->handleKeyDown(4);
-    if (arg.key == OIS::KC_A)
-      app->handleKeyDown(1);
-    if (arg.key == OIS::KC_D)
-      app->handleKeyDown(2);
+    switch (arg.key)
+      {
+      case OIS::KC_W:
+        app->handleKeyDown(AKEYCODE_W); break;
+      case OIS::KC_S:
+        app->handleKeyDown(AKEYCODE_S); break;
+      case OIS::KC_A:
+        app->handleKeyDown(AKEYCODE_A); break;
+      case OIS::KC_D:
+        app->handleKeyDown(AKEYCODE_D); break;
+      case OIS::KC_F:
+        app->handleKeyDown(AKEYCODE_F); break;
+      case OIS::KC_SPACE:
+        app->handleKeyDown(AKEYCODE_SPACE); break;
+      default: break;
+      }
 
     return true;
   }
   bool keyReleased( const OIS::KeyEvent &arg ) {
-    if (arg.key == OIS::KC_W)
-      app->handleKeyUp(3);
-    if (arg.key == OIS::KC_S)
-      app->handleKeyUp(4);
-    if (arg.key == OIS::KC_A)
-      app->handleKeyUp(1);
-    if (arg.key == OIS::KC_D)
-      app->handleKeyUp(2);
+    switch (arg.key)
+      {
+      case OIS::KC_W:
+        app->handleKeyUp(AKEYCODE_W); break;
+      case OIS::KC_S:
+        app->handleKeyUp(AKEYCODE_S); break;
+      case OIS::KC_A:
+        app->handleKeyUp(AKEYCODE_A); break;
+      case OIS::KC_D:
+        app->handleKeyUp(AKEYCODE_D); break;
+      case OIS::KC_SPACE:
+        app->handleKeyUp(AKEYCODE_SPACE); break;
+      default: break;
+      }
     return true;
   }
 };

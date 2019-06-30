@@ -61,8 +61,9 @@ private:
   Ogre::Timer * timer = nullptr;
   unsigned long lastFrameTime_us;
 
+  Ogre::SceneNode *shipNode = nullptr;
   Asteroid *asteroid = nullptr;
-  Ogre::SceneNode *camNode = nullptr;
+  std::vector<Ogre::SceneNode *> shots;
   bool forward = false, backward = false, left = false, right = false;
 
 protected:
@@ -78,8 +79,8 @@ public:
 #endif
   void initialize();
   void mainLoop();
-  void handleKeyDown(int key);
-  void handleKeyUp(int key);
+  bool handleKeyDown(int key);
+  bool handleKeyUp(int key);
 
   // Ogre::RenderQueueListener
   virtual void renderQueueStarted(Ogre::uint8 queueGroupId, const Ogre::String &invocation, bool &skipThisInvocation);

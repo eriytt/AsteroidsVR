@@ -1,0 +1,11 @@
+fragment_program fShot glsles
+{
+    source fShot.glsles
+    syntax glsles
+}
+
+vertex_program vShot glsles
+{
+    source vShot.glsles
+    syntax glsles
+}

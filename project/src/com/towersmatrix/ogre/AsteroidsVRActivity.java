@@ -123,41 +123,18 @@ public class AsteroidsVRActivity extends Activity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-        case KeyEvent.KEYCODE_A:
-            Native.HandleKeyDown(1);
+        if (Native.HandleKeyDown(keyCode))
             return true;
-        case KeyEvent.KEYCODE_D:
-            Native.HandleKeyDown(2);
-            return true;
-        case KeyEvent.KEYCODE_W:
-            Native.HandleKeyDown(3);
-            return true;
-        case KeyEvent.KEYCODE_S:
-            Native.HandleKeyDown(4);
-            return true;
-        default:
+        else
             return super.onKeyDown(keyCode, event);
-        }
     }
 
-        @Override
+    @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-        case KeyEvent.KEYCODE_A:
-            Native.HandleKeyUp(1);
+        if (Native.HandleKeyUp(keyCode))
             return true;
-        case KeyEvent.KEYCODE_D:
-            Native.HandleKeyUp(2);
-            return true;
-        case KeyEvent.KEYCODE_W:
-            Native.HandleKeyUp(3);
-            return true;
-        case KeyEvent.KEYCODE_S:
-            Native.HandleKeyUp(4);
-            return true;
-        default:
+        else
             return super.onKeyUp(keyCode, event);
-        }
+
     }
 }
