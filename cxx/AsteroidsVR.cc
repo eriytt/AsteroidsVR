@@ -165,7 +165,8 @@ bool AsteroidsVRApp::handleKeyDown(int key)
         shot->attachObject(sps);
         shot->setPosition(shipNode->getPosition());
         shot->setOrientation(shipNode->getOrientation());
-        shot->translate(Ogre::Vector3(0, 5, (shots.size() & 1 ? -1.0 : 1.0) * 10));
+        shot->translate(Ogre::Vector3((shots.size() & 1 ? -1.0 : 1.0) * 10, 5, 0),
+                        Ogre::Node::TransformSpace::TS_LOCAL);
         shots.push_back(shot);
       }
       break;
