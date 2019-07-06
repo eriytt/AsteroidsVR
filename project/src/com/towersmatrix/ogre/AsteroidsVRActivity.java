@@ -5,7 +5,9 @@ import android.os.Bundle;
 
 import android.opengl.GLSurfaceView;
 import android.util.Log;
+import android.view.InputDevice;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
@@ -19,7 +21,7 @@ public class AsteroidsVRActivity extends Activity {
     static {
         System.loadLibrary("asteroidsvr");
     }
-    
+
     private GvrLayout gvrLayout;
 
     @Override
@@ -136,5 +138,60 @@ public class AsteroidsVRActivity extends Activity {
         else
             return super.onKeyUp(keyCode, event);
 
+    }
+
+    private static float getCenteredAxis(MotionEvent event,
+                                         InputDevice device, int axis, int historyPos) {
+        final InputDevice.MotionRange range =
+            device.getMotionRange(axis, event.getSource());
+
+        // A joystick at rest does not always report an absolute position of
+        // (0,0). Use the getFlat() method to determine the range of values
+        // bounding the joystick axis center.
+        if (range != null) {
+            final float flat = range.getFlat();
+            final float value =
+                historyPos < 0 ? event.getAxisValue(axis):
+                event.getHistoricalAxisValue(axis, historyPos);
+
+            // Ignore axis values that are within the 'flat' region of the
+            // joystick axis center and normalize the value.
+            if (Math.abs(value) > flat) {
+                return value / range.getMax();
+            }
+        }
+        return 0;
+    }
+
+
+    private void processJoystickInput(MotionEvent event,
+                                      int historyPos) {
+
+        InputDevice inputDevice = event.getDevice();
+
+        float roll = getCenteredAxis(event, inputDevice,
+                                     MotionEvent.AXIS_X, historyPos);
+        float throttle = getCenteredAxis(event, inputDevice,
+                                         MotionEvent.AXIS_Y, historyPos);
+        float yaw = getCenteredAxis(event, inputDevice,
+                                    MotionEvent.AXIS_Z, historyPos);
+        float pitch = getCenteredAxis(event, inputDevice,
+                                      MotionEvent.AXIS_RZ, historyPos);
+        Native.HandleJoystick(throttle, yaw, pitch, roll);
+    }
+
+
+    @Override
+    public boolean dispatchGenericMotionEvent (MotionEvent event) {
+        // Check that the event came from a game controller
+        if ((event.getSource() & InputDevice.SOURCE_JOYSTICK) ==
+                InputDevice.SOURCE_JOYSTICK &&
+                event.getAction() == MotionEvent.ACTION_MOVE) {
+
+            // Process the current movement sample in the batch (position -1)
+            processJoystickInput(event, -1);
+            return true;
+        }
+        return super.onGenericMotionEvent(event);
     }
 }

@@ -13,6 +13,11 @@ public:
   const float FarClip = 100000.0;
   const float NearClip = 100.0;
 
+  const float MaxThrottle = 10000000.0;
+  const float MaxYaw = 0.5;
+  const float MaxPitch = 0.5;
+  const float MaxRoll = 0.5;
+
 private:
   const char *VertexShader =
     "precision mediump float;\n"
@@ -66,7 +71,7 @@ private:
   Ogre::SceneNode *shipNode = nullptr;
   Asteroid *asteroid = nullptr;
   std::vector<Ogre::SceneNode *> shots;
-  bool forward = false, backward = false, left = false, right = false, up = false, down = false, roll_right = false, roll_left = false;
+  float throttle = 0.0, yaw = 0.0, pitch = 0.0, roll = 0.0;
 
 protected:
   void setupCamera();
@@ -83,6 +88,7 @@ public:
   void mainLoop();
   bool handleKeyDown(int key);
   bool handleKeyUp(int key);
+  void handleJoystick(float throttle, float yaw, float pitch, float roll);
 
   // Ogre::RenderQueueListener
   virtual void renderQueueStarted(Ogre::uint8 queueGroupId, const Ogre::String &invocation, bool &skipThisInvocation);

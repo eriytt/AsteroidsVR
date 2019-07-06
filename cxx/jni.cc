@@ -40,4 +40,14 @@ JNI_METHOD(jboolean, HandleKeyUp)(JNIEnv *env, jclass clazz, jint key)
   return app->handleKeyUp(static_cast<int>(key));
 }
 
+JNI_METHOD(void, HandleJoystick)(JNIEnv *env, jclass clazz,
+                                 jfloat throttle,
+                                 jfloat yaw,
+                                 jfloat pitch,
+                                 jfloat roll)
+{
+  app->handleJoystick(static_cast<float>(throttle), static_cast<float>(yaw),
+                                         static_cast<float>(pitch), static_cast<float>(roll));
+}
+
 } // extern "C"

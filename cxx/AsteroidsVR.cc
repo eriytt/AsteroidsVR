@@ -95,26 +95,13 @@ void AsteroidsVRApp::mainLoop()
   Ogre::Real tdelta = (frame_time - lastFrameTime_us) / Ogre::Real(1000000);
   lastFrameTime_us = frame_time;
 
-  float F = 10000000.0;
   Ogre::Vector3 direction(shipNode->_getDerivedOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z);
-  Ogre::Vector3 acceleration(direction * (forward ? F : 0.0) / shipMass);
+  Ogre::Vector3 acceleration(direction * throttle / shipMass);
   shipVelocity += acceleration / 2.0 * tdelta;
 
-  if (left)
-    shipNode->yaw(Ogre::Radian( 0.5 * tdelta));
-  else if (right)
-    shipNode->yaw(Ogre::Radian(-0.5 * tdelta));
-
-  if (up)
-    shipNode->pitch(Ogre::Radian( 0.5 * tdelta));
-  else if (down)
-    shipNode->pitch(Ogre::Radian(-0.5 * tdelta));
-
-  if (roll_left)
-    shipNode->roll(Ogre::Radian( 0.5 * tdelta));
-  else if (roll_right)
-    shipNode->roll(Ogre::Radian(-0.5 * tdelta));
-
+  shipNode->yaw(Ogre::Radian(yaw * tdelta));
+  shipNode->pitch(Ogre::Radian(pitch * tdelta));
+  shipNode->roll(Ogre::Radian(roll * tdelta));
 
   shipNode->translate(shipVelocity * tdelta);
 
@@ -131,30 +118,28 @@ bool AsteroidsVRApp::handleKeyDown(int key)
   switch(key)
     {
     case AKEYCODE_W:
-      forward = true;
-      break;
-    case AKEYCODE_S:
-      backward = true;
+      throttle = MaxThrottle;
       break;
     case AKEYCODE_A:
-      roll_left = true;
+      roll = MaxRoll;
       break;
     case AKEYCODE_D:
-      roll_right = true;
+      roll = -MaxRoll;
       break;
     case AKEYCODE_J:
-      left = true;
+      yaw = MaxYaw;
       break;
     case AKEYCODE_L:
-      right = true;
+      yaw = -MaxYaw;
       break;
     case AKEYCODE_I:
-      up = true;
+      pitch = MaxPitch;
       break;
     case AKEYCODE_K:
-      down = true;
+      pitch = -MaxPitch;
       break;
 
+    case AKEYCODE_BUTTON_R1:
     case AKEYCODE_F:
       {
         std::cout << "Velocity: " << shipVelocity.length() << " m/s" << std::endl;
@@ -182,28 +167,19 @@ bool AsteroidsVRApp::handleKeyUp(int key)
   switch(key)
     {
     case AKEYCODE_W:
-      forward = false;
-      break;
-    case AKEYCODE_S:
-      backward = false;
+      throttle = 0.0;
       break;
     case AKEYCODE_A:
-      roll_left = false;
-      break;
     case AKEYCODE_D:
-      roll_right = false;
+      roll = 0.0;
       break;
     case AKEYCODE_J:
-      left = false;
-      break;
     case AKEYCODE_L:
-      right = false;
+      yaw = 0.0;
       break;
     case AKEYCODE_I:
-      up = false;
-      break;
     case AKEYCODE_K:
-      down = false;
+      pitch = 0.0;
       break;
     default:
       return false;
@@ -211,6 +187,15 @@ bool AsteroidsVRApp::handleKeyUp(int key)
     }
   return true;
 }
+
+void AsteroidsVRApp::handleJoystick(float new_throttle, float new_yaw, float new_pitch, float new_roll)
+{
+  throttle = -std::min(new_throttle, 0.0f) * MaxThrottle;
+  yaw = -new_yaw;
+  pitch = -new_pitch;
+  roll = -new_roll;
+}
+
 
 void AsteroidsVRApp::renderQueueStarted(Ogre::uint8 queueGroupId, const Ogre::String &invocation, bool &skipThisInvocation)
 {
