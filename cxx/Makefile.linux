@@ -1,7 +1,7 @@
 OBJECTS = main-linux.o AsteroidsVR.o ogre-linux.o Asteroid.o AsteroidField.o
 
-CXXFLAGS = -g -I/usr/include/OGRE -I/usr/include/OGRE/Terrain -I/usr/include/OGRE/RenderSystems/GL
-LDFLAGS = -L/usr/lib/x86_64-linux-gnu -lOgreMain -lOgreTerrain -lboost_system -lOIS
+CXXFLAGS = -g -I/usr/include/OGRE -I/usr/include/OGRE/RenderSystems/GL
+LDFLAGS = -L/usr/lib/x86_64-linux-gnu -lOgreMain -lboost_system -lOIS
 
 AsteroidsVR: $(OBJECTS)
 	$(CXX) -o $@ $(OBJECTS) $(LDFLAGS)
