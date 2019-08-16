@@ -137,6 +137,7 @@ void AsteroidsVRApp::mainLoop()
         {
           auto ps = static_cast<Ogre::ParticleSystem*>(shot->detachObject((unsigned short)0));
           sceneManager->destroyParticleSystem(ps);
+          sceneManager->destroySceneNode(shot);
           si = shots.erase(si);
           continue;
         }
