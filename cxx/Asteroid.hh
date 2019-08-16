@@ -12,6 +12,7 @@ private:
 public:
   Asteroid(Ogre::Entity *ent, const Ogre::Vector3 &pos);
   void update(Ogre::Real time_step);
+  const Ogre::SceneNode *getSceneNode() {return node;}
 };
 
 #endif // ASTEROID_HH

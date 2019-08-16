@@ -1,0 +1,39 @@
+particle_system Hit
+{
+    material Hit
+    particle_width 20
+    particle_height 20
+    cull_each false
+    quota 10000
+    iteration_interval 0.01
+    billboard_type point
+
+    // Area emitter
+    emitter Point
+    {
+        angle 180
+        emission_rate 150
+        time_to_live 0.2
+        direction 0 0 1
+        velocity_min 10
+        velocity_max 80
+        colour 1 1 1
+        duration 0.5
+    }
+
+    // Gravity
+    // affector LinearForce
+    // {
+    //    force_vector 0 -100 0
+    //    force_application add
+    // }
+
+    // Fader
+    affector ColourFader
+    {
+        red -1.0
+        green -5.0
+        blue -5.0
+        alpha -5.0
+    }
+}

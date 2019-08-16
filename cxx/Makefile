@@ -3,6 +3,7 @@ OGREDEPS =        /home/tower/src/3rdparty/AndroidDependencies
 # OGRE_BUILD_PATH = /home/tower/src/3rdparty/ogre-git/ogre-build-android
 OGRE_PATH =       /home/tower/src/3rdparty/ogre
 OGRE_BUILD_PATH = /home/tower/src/3rdparty/ogre-build-android
+BULLET_PATH = /home/tower/src/3rdparty/bullet3
 
 ANDROID_TOOLCHAIN_NAME = arm-linux-androideabi
 ANDROID_TOOLCHAIN_VERSION = 4.9
@@ -18,7 +19,7 @@ CC = $(ANDROID_TOOLCHAIN_ROOT)/bin/$(ANDROID_TOOLCHAIN_NAME)-gcc
 CXX = $(ANDROID_TOOLCHAIN_ROOT)/bin/$(ANDROID_TOOLCHAIN_NAME)-g++
 LD = $(ANDROID_TOOLCHAIN_ROOT)/bin/$(ANDROID_TOOLCHAIN_NAME)-ld
 
-OBJECTS = jni.o AsteroidsVR.o ogre.o Asteroid.o AsteroidField.o
+OBJECTS = jni.o AsteroidsVR.o ogre.o Asteroid.o AsteroidField.o Bullet2CollisionSdk.o
 DEBUG_CXXFLAGS = #-g
 OPT_CXXFLAGS = -O2
 SYSTEM_CXXFLAGS = --sysroot=${ANDROID_SYSROOT} \
@@ -27,9 +28,10 @@ SYSTEM_CXXFLAGS = --sysroot=${ANDROID_SYSROOT} \
 -isystem $(ANDROID_NDK)/sources/cxx-stl/gnu-libstdc++/$(ANDROID_TOOLCHAIN_VERSION)/include \
 -isystem $(ANDROID_NDK)/sources/cxx-stl/gnu-libstdc++/$(ANDROID_TOOLCHAIN_VERSION)/libs/$(ANDROID_ABI)/include
 OGRE_CXXFLAGS = -I$(OGRE_PATH)/OgreMain/include -I$(OGRE_PATH)/RenderSystems/GLES2/include -I$(OGRE_PATH)/PlugIns/ParticleFX/include -I$(OGRE_PATH)/Components/Terrain/include -I$(OGRE_BUILD_PATH)/include
+BULLET_CXXFLAGS = -I$(BULLET_PATH)/src
 GVR_CXXFLAGS = -I$(GVRNDK)/include
 
-CXXFLAGS = $(DEBUG_CXXFLAGS) $(OPT_CXXFLAGS) -std=c++14 -Wall -fPIC -frtti -fexceptions $(SYSTEM_CXXFLAGS) $(OGRE_CXXFLAGS) $(GVR_CXXFLAGS) -DANDROID
+CXXFLAGS = $(DEBUG_CXXFLAGS) $(OPT_CXXFLAGS) -std=c++14 -Wall -fPIC -frtti -fexceptions $(SYSTEM_CXXFLAGS) $(OGRE_CXXFLAGS) $(BULLET_CXXFLAGS) $(GVR_CXXFLAGS) -DANDROID
 
 
 SYSTEM_LDFLAGS = --sysroot=${ANDROID_SYSROOT} \
@@ -42,8 +44,10 @@ OGRE_LDFLAGS = -L$(OGRE_BUILD_PATH)/lib -lRenderSystem_GLES2Static -lOgreGLSuppo
 OGREDEPS_LDFLAGS = -L$(OGREDEPS)/lib/$(ANDROID_ABI) -lFreeImage -lzzip -lzlib
 OGRE_LDFLAGS = -L$(OGRE_BUILD_PATH)/lib -lPlugin_ParticleFXStatic -lRenderSystem_GLES2Static -lOgreTerrainStatic -lOgreMainStatic -L$(OGRE_BUILD_PATH)/OgreJNI/obj/local/$(ANDROID_ABI) -lcpufeatures -lGLESv2 $(OGREDEPS_LDFLAGS)
 
+BULLET_LDFLAGS = -L$(BULLET_PATH)/build3/Android/obj/local/armeabi-v7a -lBullet
+
 TEST_LDFLAGS = -lGLESv2
-LDFLAGS = -shared -fPIC $(OGRE_LDFLAGS) $(GVR_LDFLAGS) $(SYSTEM_LDFLAGS) \
+LDFLAGS = -shared -fPIC $(BULLET_LDFLAGS) $(OGRE_LDFLAGS) $(GVR_LDFLAGS) $(SYSTEM_LDFLAGS) \
 -Wl,-uJava_com_towersmatrix_ogre_AsteroidsVRActivity_nativeInitOgre
 
 asteroidsvr.so: $(OBJECTS)

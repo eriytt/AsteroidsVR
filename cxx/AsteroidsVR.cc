@@ -1,5 +1,7 @@
 #include "AsteroidsVR.hh"
 
+#include "Bullet2CollisionSdk.hh"
+
 #include "keycodes.h"
 #include "AsteroidField.hh"
 
@@ -32,6 +34,11 @@ void AsteroidsVRApp::setupResources(Ogre::ResourceGroupManager &rgm)
 void AsteroidsVRApp::initialize()
 {
   OgreCardboardApp::initialize();
+
+
+  btSdk = new Bullet2CollisionSdk;
+  btSdk->createCollisionWorld(0, 0, 0);
+
 
   forBothCamerasAndViewports([](Ogre::Camera *c, Ogre::Viewport *vp){
     c->setPosition(Ogre::Vector3(0.0f, 0.0f, 0.0f));
@@ -73,6 +80,13 @@ void AsteroidsVRApp::initialize()
   asteroid_ent->setMaterialName("myshadermaterial");
   asteroid = new Asteroid(asteroid_ent, Ogre::Vector3(-5000.0f, 0.0f, 0.0f));
 
+  auto apos = asteroid->getSceneNode()->_getDerivedPosition();
+  auto asteroid_shape = btSdk->createSphereShape(150);
+  asteroidColObj = btSdk->createCollisionObject(nullptr, 0, asteroid_shape,
+                                                btVector3(apos.x, apos.y, apos.z),
+                                                btQuaternion(0, 0, 0, 1));
+  btSdk->addCollisionObject(asteroidColObj);
+
   shipNode = sceneManager->getRootSceneNode()->createChildSceneNode();
   shipNode->setPosition(lcam->getDerivedPosition());
   shipNode->setOrientation(lcam->getDerivedOrientation());
@@ -104,10 +118,64 @@ void AsteroidsVRApp::mainLoop()
   shipNode->roll(Ogre::Radian(roll * tdelta));
 
   shipNode->translate(shipVelocity * tdelta);
+  Ogre::Vector3 shipPosition(shipNode->_getDerivedPosition());
 
   asteroid->update(tdelta);
-  for (auto shot : shots)
-    shot->translate(Ogre::Vector3(0, 0, -1000) * tdelta, Ogre::Node::TransformSpace::TS_LOCAL);
+
+  auto apos = asteroid->getSceneNode()->_getDerivedPosition();
+  btSdk->setCollisionObjectTransform(asteroidColObj,
+                                     btVector3(apos.x, apos.y, apos.z),
+                                     btQuaternion(0, 0, 0, 1));
+  btSdk->updateBoundingBoxes();
+
+  auto si = shots.begin();
+  for (; si != shots.end();)
+    {
+      auto shot = *si;
+      Ogre::Vector3 shotPosition(shot->_getDerivedPosition());
+      if (shotPosition.squaredDistance(shipPosition) > 25000000.0f)
+        {
+          auto ps = static_cast<Ogre::ParticleSystem*>(shot->detachObject((unsigned short)0));
+          sceneManager->destroyParticleSystem(ps);
+          si = shots.erase(si);
+          continue;
+        }
+
+      shot->translate(Ogre::Vector3(0, 0, -1000) * tdelta, Ogre::Node::TransformSpace::TS_LOCAL);
+      Ogre::Vector3 newShotPosition(shot->_getDerivedPosition());
+
+      auto result = btSdk->shootRay(btVector3(shotPosition.x, shotPosition.y, shotPosition.z),
+                                    btVector3(newShotPosition.x, newShotPosition.y, newShotPosition.z));
+      if (result.m_collisionObject != nullptr)
+        {
+          auto ps = static_cast<Ogre::ParticleSystem*>(shot->detachObject((unsigned short)0));
+          sceneManager->destroyParticleSystem(ps);
+
+
+          Ogre::SceneNode *hit = sceneManager->getRootSceneNode()->createChildSceneNode();
+          std::stringstream name;
+          name << "hit" << shotCtr++;
+          Ogre::ParticleSystem *sps = sceneManager->createParticleSystem(name.str(), "Hit");
+          hit->attachObject(sps);
+          hit->setPosition(Ogre::Vector3(result.m_hitPointWorld.x(),
+                                         result.m_hitPointWorld.y(),
+                                         result.m_hitPointWorld.z()));
+          queue.postEvent(lastFrameTime_us + (sps->getEmitter(0)->getDuration() + 1) * 1000000,
+                          [&, hit, sps](unsigned long at, unsigned long et, eid_t id) {
+                            sceneManager->getRootSceneNode()->removeChild(hit);
+                            hit->detachObject(sps);
+                            sceneManager->destroyParticleSystem(sps);
+                            sceneManager->destroySceneNode(hit);
+                          });
+
+          si = shots.erase(si);
+          continue;
+        }
+
+        ++si;
+    }
+
+  queue.advance(lastFrameTime_us);
 
   renderFrame();
 }
@@ -144,13 +212,13 @@ bool AsteroidsVRApp::handleKeyDown(int key)
       {
         std::cout << "Velocity: " << shipVelocity.length() << " m/s" << std::endl;
         Ogre::SceneNode *shot = sceneManager->getRootSceneNode()->createChildSceneNode();
-        std::stringstream name("shot");
-        name << shots.size();
+        std::stringstream name;
+        name << "shot" << shotCtr++;
         Ogre::ParticleSystem *sps = sceneManager->createParticleSystem(name.str(), "Shot");
         shot->attachObject(sps);
         shot->setPosition(shipNode->getPosition());
         shot->setOrientation(shipNode->getOrientation());
-        shot->translate(Ogre::Vector3((shots.size() & 1 ? -1.0 : 1.0) * 10, 5, 0),
+        shot->translate(Ogre::Vector3((shotCtr & 1 ? -1.0 : 1.0) * 10, 5, 0),
                         Ogre::Node::TransformSpace::TS_LOCAL);
         shots.push_back(shot);
       }

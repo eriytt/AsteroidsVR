@@ -1,7 +1,7 @@
-OBJECTS = main-linux.o AsteroidsVR.o ogre-linux.o Asteroid.o AsteroidField.o
+OBJECTS = main-linux.o AsteroidsVR.o ogre-linux.o Asteroid.o AsteroidField.o Bullet2CollisionSdk.o
 
-CXXFLAGS = -g -I/usr/include/OGRE -I/usr/include/OGRE/RenderSystems/GL
-LDFLAGS = -L/usr/lib/x86_64-linux-gnu -lOgreMain -lboost_system -lOIS
+CXXFLAGS = -g -I/usr/include/OGRE -I/usr/include/OGRE/RenderSystems/GL -I/usr/include/bullet
+LDFLAGS = -L/usr/lib/x86_64-linux-gnu -lOgreMain -lboost_system -lOIS -lBulletCollision -lLinearMath -lBulletDynamics
 
 AsteroidsVR: $(OBJECTS)
 	$(CXX) -o $@ $(OBJECTS) $(LDFLAGS)

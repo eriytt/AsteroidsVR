@@ -5,6 +5,14 @@
 #endif
 
 #include "Asteroid.hh"
+#include "EventQueue.hh"
+
+
+using EventQ = EventQueue<unsigned long>;
+using eid_t = EventQ::EventID;
+
+class Bullet2CollisionSdk;
+class btCollisionObject;
 
 class AsteroidsVRApp:  public OgreCardboardApp,  public Ogre::RenderQueueListener
 {
@@ -63,6 +71,8 @@ private:
     "    }\n"
     "}\n";
 
+  EventQ queue;
+
   Ogre::Timer * timer = nullptr;
   unsigned long lastFrameTime_us;
 
@@ -70,8 +80,12 @@ private:
   Ogre::Vector3 shipVelocity = Ogre::Vector3::ZERO;
   Ogre::SceneNode *shipNode = nullptr;
   Asteroid *asteroid = nullptr;
-  std::vector<Ogre::SceneNode *> shots;
+  std::list<Ogre::SceneNode *> shots;
+  unsigned shotCtr = 0;
   float throttle = 0.0, yaw = 0.0, pitch = 0.0, roll = 0.0;
+
+  Bullet2CollisionSdk *btSdk = nullptr;
+  btCollisionObject *asteroidColObj = nullptr;
 
 protected:
   void setupCamera();
